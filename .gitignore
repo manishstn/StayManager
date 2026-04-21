@@ -1,6 +1,12 @@
 # Compiled class file
 *.class
 
+# Faster/Cleaner way to catch them anywhere in the project
+.idea/
+node_modules/
+**/node_modules/
+**/.idea/
+
 # Log file
 *.log
 
