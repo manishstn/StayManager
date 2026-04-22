@@ -19,7 +19,7 @@ public class JWTUtils {
     private final long expirationTime;
 
     // Use Constructor Injection for @Value fields
-    public  JWTUtils(
+    public JWTUtils(
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration}") long expirationTime) {
 
