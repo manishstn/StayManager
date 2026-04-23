@@ -17,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 
@@ -24,30 +26,20 @@ import org.springframework.stereotype.Service;
 
 public class UserServiceImpl implements UserService {
 
-
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final JWTUtils jwtUtils;
-
     private final AuthenticationManager authenticationManager;
 
-
     @Override
-
     public Response register(User user) {
-
         Response response = new Response();
-
         if (user.getRole() == null || user.getRole().isBlank()) {
             user.setRole("USER");
         }
-
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Username is already in use");
         }
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         UserDTO userDTO = Utils.mapUserEntityToUserDTO(savedUser);
@@ -70,8 +62,8 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-@Override
-public Response getUserInfo(String email) {
+    @Override
+    public Response getUserInfo(String email) {
         Response response = new Response();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNameNotFoundException("user Not found"));
         UserDTO userDTO = Utils.mapUserEntityToUserDTO(user);
@@ -81,4 +73,47 @@ public Response getUserInfo(String email) {
         return response;
     }
 
+    @Override
+    public Response getAllUsers() {
+        Response response = new Response();
+        List<User> userList = userRepository.findAll();
+        List<UserDTO> userDTOList = Utils.mapUserListEntityToUserListDTO(userList);
+        response.setStatusCode(200);
+        response.setMessage("successful");
+        response.setUserList(userDTOList);
+        return response;
+    }
+
+    @Override
+    public Response getUserBookingHistory(String userId) {
+        Response response = new Response();
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new UserNameNotFoundException("User Not Found"));
+        UserDTO userDTO = Utils.mapUserEntityToUserDTOPlusBookings(user);
+        response.setStatusCode(200);
+        response.setMessage("successful");
+        response.setUser(userDTO);
+        return response;
+    }
+
+    @Override
+    public Response deleteUser(String userId) {
+        Response response = new Response();
+        userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new UserNameNotFoundException("User Not Found"));
+        userRepository.deleteById(Long.valueOf(userId));
+        response.setStatusCode(200);
+        response.setMessage("successful");
+        return response;
+    }
+
+    @Override
+    public Response getUserById(String userId) {
+        Response response = new Response();
+
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new UserNameNotFoundException("User Not Found"));
+        UserDTO userDTO = Utils.mapUserEntityToUserDTO(user);
+        response.setStatusCode(200);
+        response.setMessage("successful");
+        response.setUser(userDTO);
+        return response;
+    }
 }

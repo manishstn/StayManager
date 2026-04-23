@@ -10,4 +10,12 @@ public interface UserService {
     Response login(LoginRequestDTO loginRequestDTO);
 
     Response getUserInfo(String email);
+
+    Response getAllUsers();
+
+    Response getUserBookingHistory(String userId);
+
+    Response deleteUser(String userId);
+
+    Response getUserById(String userId);
 }
