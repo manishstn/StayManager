@@ -1,8 +1,10 @@
 package com.statymanger.exception;
 
+import com.statymanger.dto.Response;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,6 +20,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseMessage> handleResourceNotFound(ResourceNotFoundException e) {
         ResponseMessage message = new ResponseMessage(HttpStatus.NOT_FOUND.value(), e.getMessage(), Instant.now());
         return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Response> handleBadCredentials(BadCredentialsException e) {
+        Response response = new Response();
+        response.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+        response.setMessage("Invalid email or password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(UserNameNotFoundException.class)
