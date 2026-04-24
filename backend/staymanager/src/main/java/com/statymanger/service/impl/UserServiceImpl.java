@@ -4,8 +4,10 @@ package com.statymanger.service.impl;
 import com.statymanger.dto.LoginRequestDTO;
 import com.statymanger.dto.Response;
 import com.statymanger.dto.UserDTO;
+import com.statymanger.entity.RevokedToken;
 import com.statymanger.entity.User;
 import com.statymanger.exception.UserNameNotFoundException;
+import com.statymanger.repository.RevokedTokenRepository;
 import com.statymanger.repository.UserRepository;
 import com.statymanger.service.UserService;
 import com.statymanger.utils.JWTUtils;
@@ -17,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -30,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JWTUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
+    private final RevokedTokenRepository revokedTokenRepository;
 
     @Override
     public Response register(User user) {
@@ -114,6 +118,33 @@ public class UserServiceImpl implements UserService {
         response.setStatusCode(200);
         response.setMessage("successful");
         response.setUser(userDTO);
+        return response;
+    }
+
+    @Override
+    public Response logout(String authHeader) {
+        Response response = new Response();
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+
+            // Get expiry from JWT (assuming your jwtUtils returns Date or Long)
+            long expiryMillis = jwtUtils.getExpirationTimeInMillis(token);
+            LocalDateTime expiryDateTime = LocalDateTime.ofInstant(
+                    java.time.Instant.ofEpochMilli(expiryMillis),
+                    java.time.ZoneId.systemDefault()
+            );
+
+            // Save to DB
+            RevokedToken revokedToken = RevokedToken.builder()
+                    .token(token)
+                    .expiryDate(expiryDateTime)
+                    .build();
+
+            revokedTokenRepository.save(revokedToken);
+
+            response.setStatusCode(200);
+            response.setMessage("Logged out successfully");
+        }
         return response;
     }
 }

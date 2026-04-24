@@ -29,16 +29,11 @@ public class SecurityConfig {
     private final JWTAuthFilter jwtAuthFilter;
 
     // Your shared whitelist format
-    String[] AUTH_WHITELIST = {"/auth/**", "/rooms/**", "/bookings/**"};
+    private static final String[] AUTH_WHITELIST = {"/auth/**", "/rooms/**", "/bookings/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults()).
-                authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .anyRequest().authenticated())
-                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
-                authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults()).authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated()).sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

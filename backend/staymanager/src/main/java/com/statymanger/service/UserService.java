@@ -18,4 +18,6 @@ public interface UserService {
     Response deleteUser(String userId);
 
     Response getUserById(String userId);
+
+    Response logout(String authHeader);
 }
