@@ -41,6 +41,8 @@ public class Booking {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    private String invoiceUrl;
+    private String invoiceId;
     @Version
     private Long version;
 

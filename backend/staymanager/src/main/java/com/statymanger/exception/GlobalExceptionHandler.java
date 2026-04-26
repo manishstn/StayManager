@@ -18,6 +18,16 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InvalidBookingException.class)
+    public ResponseEntity<Response> handleBookingError(InvalidBookingException ex) {
+        return ResponseEntity.status(400).body(
+                Response.builder()
+                        .statusCode(400)
+                        .message("Booking Denied: " + ex.getMessage())
+                        .build()
+        );
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ResponseMessage> handleResourceNotFound(ResourceNotFoundException e) {
         ResponseMessage message = new ResponseMessage(HttpStatus.NOT_FOUND.value(), e.getMessage(), Instant.now());
@@ -63,6 +73,26 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseMessage> handleConstraintViolation(Exception e) {
         ResponseMessage message = new ResponseMessage(HttpStatus.CONFLICT.value(), "This action cannot be completed because it conflicts with existing data.", Instant.now());
         return new ResponseEntity<>(message, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<Response> handleFileError(FileStorageException ex) {
+        return ResponseEntity.status(500).body(
+                Response.builder()
+                        .statusCode(500)
+                        .message("Storage Error: " + ex.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(StayManagerException.class)
+    public ResponseEntity<Response> handleGenericBusinessError(StayManagerException ex) {
+        return ResponseEntity.status(500).body(
+                Response.builder()
+                        .statusCode(500)
+                        .message("Business Logic Error: " + ex.getMessage())
+                        .build()
+        );
     }
 
     @ExceptionHandler(Exception.class)

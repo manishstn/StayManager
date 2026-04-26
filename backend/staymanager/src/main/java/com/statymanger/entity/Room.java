@@ -20,6 +20,7 @@ public class Room {
     private String roomType;
     private BigDecimal roomPrice;
     private String roomPhotoUrl;
+    private String roomPhotoId;
     private String roomDescription;
     @Version
     private Long version;
