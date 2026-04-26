@@ -1,4 +1,15 @@
 HELP.md
+
+# IntelliJ IDEA settings
+.idea/
+*.iml
+out/
+gen/
+
+# If you want to be very specific about the files you mentioned:
+ .idea/compiler.xml
+ .idea/misc.xml
+
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
