@@ -92,15 +92,11 @@ public class BookingServiceImpl implements BookingService {
 
         response.setStatusCode(HttpStatus.CREATED.value());
         response.setMessage("Booking has been Successfully done.");
-        // Optional: return the code so the user can see it immediately
         response.setBookingConfirmationCode(booking.getBookingConfirmationCode());
         return response;
     }
 
-    /**
-     * Simplified date overlap logic:
-     * Two periods overlap if (StartA < EndB) AND (EndA > StartB)
-     */
+
     private boolean roomIsAvailable(Booking bookingRequest, List<Booking> existingBookings) {
         return existingBookings.stream().noneMatch(existing ->
                 bookingRequest.getCheckInDate().isBefore(existing.getCheckOutDate()) &&
